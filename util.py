@@ -127,6 +127,7 @@ def read_license_plate(license_plate_crop):
             return format_license(text), score
 
     return None, None
+    # return detections
 
 
 def get_car(license_plate, vehicle_track_ids):
