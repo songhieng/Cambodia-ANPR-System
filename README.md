@@ -1,254 +1,240 @@
-# Vehicle Detection and License Plate Recognition System
+# Cambodia ANPR (Automatic Number Plate Recognition) System
 
-This project implements a real-time vehicle detection and license plate recognition system. It leverages state-of-the-art deep learning models for object detection (YOLO) and optical character recognition (EasyOCR) for license plate reading. Additionally, it tracks vehicles using the SORT algorithm, classifies vehicle types and colors, and integrates with Firebase for real-time data storage and retrieval.
+A professional vehicle detection and license plate recognition system using state-of-the-art deep learning models. This system leverages YOLO for object detection, EasyOCR for license plate reading, and integrates with Firebase for real-time data storage and retrieval.
 
----
+## ✨ Features
 
-## Table of Contents
+- **Vehicle Detection**: Fast and accurate detection using YOLOv8
+- **License Plate Recognition**: OCR-based plate reading with character mapping corrections
+- **Vehicle Tracking**: SORT algorithm for consistent cross-frame tracking
+- **Vehicle Classification**: Automatic type and color classification
+- **Firebase Integration**: Real-time data storage and cloud-based image hosting
+- **Web Interface**: Easy-to-use Gradio interface for video processing
+- **Flagged Plates**: Automatic detection of suspicious/wanted vehicles
+- **Professional Code Structure**: Modular, well-documented, and maintainable
 
-- [Features](#features)
-- [Overview](#overview)
+## 📋 Table of Contents
+
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
-- [Detailed Components](#detailed-components)
-  - [YOLO for Vehicle Detection](#yolo-for-vehicle-detection)
-  - [EasyOCR for License Plate Recognition](#easyocr-for-license-plate-recognition)
-  - [Vehicle Tracking and Classification](#vehicle-tracking-and-classification)
-  - [Firebase Integration](#firebase-integration)
-- [Results and Outputs](#results-and-outputs)
+- [Modules](#modules)
 - [Contributing](#contributing)
 - [License](#license)
 
----
-
-## Features
-
-- **Vehicle Detection:**  
-  Utilizes YOLO (You Only Look Once) for fast and accurate detection of vehicles and license plates in real-time or recorded videos.
-
-- **License Plate Recognition:**  
-  Integrates EasyOCR to extract and interpret text from detected license plates, including character mapping corrections (e.g., converting "O" to "0").
-
-- **Vehicle Tracking:**  
-  Implements the SORT algorithm to track vehicles across video frames, ensuring smooth detection even when vehicles are in motion.
-
-- **Color and Type Classification:**  
-  Uses a pre-trained model to predict vehicle colors and another YOLO-based classifier to determine the type of vehicle (e.g., sedan, SUV, truck).
-
-- **Firebase Integration:**  
-  Connects to Firebase for real-time storage of detection data and images, enabling remote monitoring and data retrieval.
-
-- **Web Interface:**  
-  Provides an easy-to-use Gradio web interface for processing videos and visualizing the detection results.
-
----
-
-## Overview
-
-The system operates by first detecting vehicles in each video frame using YOLO models. Once a vehicle is detected, the system applies the SORT algorithm to track the movement across frames. When a license plate is identified, the license plate area is extracted and passed to EasyOCR for text recognition. The recognized text is then post-processed to correct common misclassifications.
-
-In addition to detection, the system classifies the vehicle’s type and color. All detected images and corresponding metadata (license plate number, vehicle type, color, timestamp) are stored in Firebase. This makes the system suitable for applications such as parking management, traffic monitoring, and automated toll collection.
-
----
-
-## Installation
+## 🚀 Installation
 
 ### Prerequisites
 
-- **Python:** Version 3.8 or above is recommended.
-- **Virtual Environment:** (Recommended) Use `venv` or `conda` for dependency isolation.
-- **Firebase Account:** Set up a Firebase project for database and storage integration.
+- Python 3.8 or higher
+- Virtual environment (recommended)
+- Firebase project with Realtime Database and Storage enabled
 
-### Clone the Repository
+### Setup
 
+1. **Clone the repository**
 ```bash
-git clone https://github.com/your-repo/vehicle-detection.git
-cd vehicle-detection
+git clone https://github.com/songhieng/Cambodia-ANPR-System.git
+cd Cambodia-ANPR-System
 ```
 
-### Install Dependencies
+2. **Create and activate virtual environment**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-Ensure that you have all the required packages installed by running:
-
+3. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-**Required Dependencies:**
-
-- `ultralytics` (for YOLO object detection)
-- `opencv-python`
-- `numpy`
-- `scipy`
-- `firebase-admin`
-- `easyocr`
-- `gradio`
-
----
-
-## Project Structure
-
-```
-vehicle-detection/
-│── models/                     # Pre-trained YOLO models for vehicles and license plates
-│── detected_cars/              # Directory for saving images of detected vehicles
-│── detected_plates/            # Directory for saving images of detected license plates
-│── data/                      # Additional datasets and metadata
-│── utils/                     # Utility functions and scripts
-│   ├── color_thresholding.py  # Functions for vehicle color extraction using HSV thresholds
-│   ├── license_plate_ocr.py   # OCR functions leveraging EasyOCR for license plate reading
-│── type.py                    # YOLO-based vehicle type classification script
-│── main.py                    # Main script for vehicle detection and tracking
-│── deploy.py                  # Deployment script using Gradio for the web interface
-│── v3.py                      # Enhanced version with Firebase integration for vehicle tracking
-│── requirements.txt           # List of required dependencies
-│── README.md                  # This documentation file
-```
-
----
-
-## Usage
-
-### Running Vehicle Detection
-
-To execute the main detection script:
+4. **Configure Firebase**
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Realtime Database and Storage
+   - Download your service account credentials JSON file
+   - Copy `.env.example` to `.env` and update with your credentials
 
 ```bash
-python main.py
+cp .env.example .env
+# Edit .env with your Firebase credentials
 ```
 
-This script initializes the YOLO models, starts vehicle detection and tracking, extracts license plate regions, and saves the corresponding images and data.
+## ⚙️ Configuration
 
-### Running the Web Interface
+The system uses environment variables for configuration. Create a `.env` file with:
 
-For an interactive web-based video processing interface, run:
+```env
+FIREBASE_CREDENTIALS_PATH=path/to/your/firebase-credentials.json
+FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
+FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VIDEO_PATH=./path/to/video.mp4  # Optional: default video path
+```
+
+### Configuration Options
+
+Edit `config.py` to customize:
+- Model paths
+- Detection thresholds
+- Frame skip rate
+- Vehicle class mappings
+- Output directories
+
+## 📁 Project Structure
+
+```
+Cambodia-ANPR-System/
+├── config.py                  # Configuration and settings
+├── firebase_utils.py          # Firebase operations manager
+├── detection_utils.py         # Detection and classification utilities
+├── util.py                    # License plate OCR utilities
+├── sort/                      # SORT tracking algorithm
+│   ├── __init__.py
+│   └── sort.py
+├── main_refactored.py         # Main detection script
+├── deploy_refactored.py       # Gradio web interface
+├── type.py                    # Vehicle type classification utility
+├── models/                    # YOLO model weights
+│   └── run46.pt              # License plate detection model
+├── detected_cars/             # Output: detected vehicle images
+├── detected_plates/           # Output: detected plate images
+├── DATA/                      # Output: flagged vehicle images
+├── requirements.txt           # Python dependencies
+├── .env.example              # Environment variables template
+├── .gitignore                # Git ignore rules
+└── README.md                 # This file
+```
+
+## 💻 Usage
+
+### Web Interface (Recommended)
+
+Launch the Gradio web interface:
 
 ```bash
-python deploy.py
+python deploy_refactored.py
 ```
 
-This will launch a Gradio interface where users can upload video files and view real-time detection results.
+Then open your browser to the provided URL and upload a video file.
 
-### Processing a Video File with Firebase Integration
+### Command Line
 
-To process a video file and integrate with Firebase for data storage, use:
+Process a video from the command line:
 
 ```bash
-python v3.py --input your_video.mp4
+python main_refactored.py
 ```
 
+Set the video path in your `.env` file or modify the script.
+
+### Vehicle Type Classification
+
+Test vehicle type/make classification on a single image:
+
+```bash
+python type.py
+```
+
+## 📚 Modules
+
+### `config.py`
+Central configuration module containing:
+- Model paths and settings
+- Vehicle type/color mappings
+- Output directory configuration
+- Detection parameters
+
+### `firebase_utils.py`
+Firebase integration manager with:
+- Singleton pattern for connection management
+- Storage upload functionality
+- Database read/write operations
+- Error handling and logging
+
+### `detection_utils.py`
+Core detection utilities:
+- `VehicleDetector`: Main detection class
+- Vehicle and license plate detection
+- Vehicle type and color classification
+- Image saving and Firebase upload
+
+### `util.py`
+License plate processing utilities:
+- OCR with EasyOCR
+- Character mapping and correction
+- License plate format validation
+- Vehicle-plate association
+
+### `sort/sort.py`
+SORT (Simple Online and Realtime Tracking):
+- Kalman filtering for prediction
+- Hungarian algorithm for association
+- Multi-object tracking across frames
+
+## 🔒 Security
+
+⚠️ **Important**: Never commit Firebase credentials or API keys to version control.
+
+- All credentials should be stored in `.env` file
+- `.env` is included in `.gitignore`
+- Use `.env.example` as a template
+- Rotate credentials if accidentally exposed
+
+## 🛠️ Development
+
+### Code Style
+
+This project follows:
+- PEP 8 style guidelines
+- Type hints for function parameters
+- Comprehensive docstrings
+- Logging instead of print statements
+
+### Adding New Features
+
+1. Create feature branch
+2. Implement changes with proper documentation
+3. Add error handling and logging
+4. Test thoroughly
+5. Submit pull request
+
+## 📊 Results
+
+The system generates:
+- **Detected Vehicle Images**: Saved in `detected_cars/`
+- **License Plate Images**: Saved in `detected_plates/`
+- **Flagged Vehicles**: Saved in `DATA/` directory
+- **Firebase Database**: Real-time detection metadata
+- **Processing Statistics**: Vehicle counts and traffic scores
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- YOLO by Ultralytics
+- SORT algorithm by Alex Bewley
+- EasyOCR for OCR functionality
+- Firebase for cloud services
+
+## 📞 Support
+
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Contact: [Repository Owner]
+
 ---
 
-## Detailed Components
-
-### YOLO for Vehicle Detection
-
-**YOLO (You Only Look Once):**  
-YOLO is a deep learning-based object detection system known for its speed and accuracy. In this project:
-
-- **Detection Process:**  
-  The YOLO model scans each video frame and outputs bounding boxes along with confidence scores for detected objects (vehicles and license plates).
-
-- **Pre-trained Models:**  
-  Pre-trained weights are provided in the `models/` directory. You can fine-tune these models further if needed.
-
-- **Benefits:**  
-  The one-stage detection mechanism of YOLO ensures that vehicle detection happens in real-time, which is crucial for live monitoring applications.
-
-### EasyOCR for License Plate Recognition
-
-**EasyOCR:**  
-EasyOCR is a robust Optical Character Recognition (OCR) tool that supports multiple languages and works efficiently with license plate images.
-
-- **OCR Process:**  
-  Once a license plate is detected by the YOLO model, the region of interest is cropped and passed to EasyOCR. The recognized text is then filtered and corrected (e.g., mapping similar looking characters such as "O" and "0").
-
-- **Character Mapping:**  
-  The `license_plate_ocr.py` script includes routines for adjusting common OCR misinterpretations, ensuring the final license plate string is accurate.
-
-### Vehicle Tracking and Classification
-
-- **Tracking with SORT:**  
-  The Simple Online and Realtime Tracking (SORT) algorithm is used to maintain consistent identification of vehicles across frames. This enhances detection stability and prevents duplicate records.
-
-- **Color Classification:**  
-  A dedicated model and the `color_thresholding.py` utility are used to determine the color of the detected vehicles based on HSV thresholds.
-
-- **Vehicle Type Classification:**  
-  The `type.py` script employs another YOLO model specifically trained to classify vehicle types (e.g., sedan, SUV, truck).
-
-### Firebase Integration
-
-Firebase is used to store detection metadata and images in real-time.
-
-- **Setup:**  
-  - Create a Firebase project on the [Firebase Console](https://console.firebase.google.com/).
-  - Download the Service Account Key (a JSON file) and place it in your project directory.
-  - Enable Firebase Realtime Database and Storage.
-
-- **Configuration:**  
-  Update the Firebase initialization section in `main.py`, `v3.py`, or `deploy.py` with your credentials:
-
-  ```python
-  import firebase_admin
-  from firebase_admin import credentials
-
-  cred = credentials.Certificate("your-firebase-adminsdk.json")
-  firebase_admin.initialize_app(cred, {
-      'databaseURL': 'https://your-firebase-project.firebaseio.com',
-      'storageBucket': 'your-firebase-project.appspot.com'
-  })
-  ```
-
-- **Data Handling:**  
-  The system uploads the following data for each detection:
-  - License Plate Number
-  - Vehicle Type
-  - Vehicle Color
-  - Timestamp of detection
-  - Associated images stored in Firebase Storage
-
----
-
-## Results and Outputs
-
-After processing, the system generates:
-
-- **Detected Vehicle Images:**  
-  Saved in the `detected_cars/` directory.
-
-- **License Plate Images:**  
-  Saved in the `detected_plates/` directory.
-
-- **Firebase Database Entries:**  
-  Each entry contains metadata similar to:
-
-  ```json
-  {
-      "license_plate": "ABC1234",
-      "vehicle_type": "SUV",
-      "color": "Red",
-      "timestamp": "2025-02-04T12:30:00"
-  }
-  ```
-
-These outputs can be further used for analytics, reporting, or real-time monitoring dashboards.
-
----
-
-## Contributing
-
-Contributions to improve the system are welcome. Please follow these steps:
-
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/new-feature`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature/new-feature`).
-5. Create a new Pull Request.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+**Note**: This is a refactored and professionally structured version of the original Cambodia ANPR System, with improved code organization, documentation, and security practices.
